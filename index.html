@@ -29,7 +29,7 @@ p{font-size:16px;line-height:1.5;color:var(--soft);margin:0 0 12px}
 .btn:focus-visible{outline:3px solid var(--yellow);outline-offset:4px}
 .gift{width:170px;height:170px;margin:0 auto 24px;display:block;animation:wiggle 2.4s ease-in-out infinite;transform-origin:50% 90%}
 @keyframes wiggle{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-6deg)}84%{transform:rotate(6deg)}92%{transform:rotate(-3deg)}}
-.cap{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:clamp(30px,10vw,46px);color:#fff;margin:0 0 16px;text-shadow:0 2px 18px rgba(0,0,0,.75),0 0 3px rgba(0,0,0,.5);animation:capin .9s ease both}
+.cap{font-family:Unbounded,system-ui,sans-serif;font-weight:600;font-size:clamp(18px,5.5vw,24px);letter-spacing:.02em;color:rgba(255,255,255,.88);position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 20vh);margin:0;padding:0 20px;text-shadow:0 1px 10px rgba(0,0,0,.55);animation:capin .9s ease both}
 .cap.again{animation:capin .9s ease both}
 @keyframes capin{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
 .card{background:var(--card);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:26px;padding:24px 20px;border:3px solid var(--ink);box-shadow:6px 6px 0 var(--yellow);max-height:62vh;overflow:auto;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
@@ -40,7 +40,7 @@ p{font-size:16px;line-height:1.5;color:var(--soft);margin:0 0 12px}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 #bg{position:fixed;inset:0;z-index:0;opacity:0;transition:opacity 1.2s ease;pointer-events:none;background:#1b1230}
 body.open #bg{opacity:1}
-.slide{position:absolute;inset:0;background-size:cover;background-position:center 30%;opacity:0;transition:opacity 1.6s ease}
+.slide{position:absolute;inset:0;background-size:cover;background-position:center 30%;opacity:0;transition:opacity 1s ease}
 .slide.on{opacity:1}
 #bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(20,12,40,.25),rgba(20,12,40,.05) 35%,rgba(20,12,40,.8))}
 [hidden]{display:none!important}
@@ -73,7 +73,6 @@ canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index
       <h1 id="title">С днём рождения!</h1>
       <p class="line" style="--d:.6s">Есть люди, рядом с которыми мир становится теплее. Ты один из них.</p>
       <p class="line" style="--d:1.8s">С тобой обычные дни превращаются в воспоминания, а трудные становятся легче.</p>
-      <p class="line" style="--d:3s">Я редко говорю это вслух, но без тебя всё было бы другим. И точно скучнее.</p>
       <div class="sign line" style="--d:4.4s">Спасибо, что ты есть.</div>
     </div>
   </section>
@@ -118,7 +117,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index
   }
   function startShow(){
     slides[0].classList.add('on');
-    setInterval(function(){ cur = (cur+1) % slides.length; show(cur); }, 5000);
+    setInterval(function(){ cur = (cur+1) % slides.length; show(cur); }, 3000);
   }
 
   // Конфетти
