@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>С днём рождения!</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3ECFF; --ink:#2A1B4D; --soft:#5B4A80; --pink:#FF4D8D; --yellow:#FFC83D; --card:#FFFFFF;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#1E1633;--ink:#FFF4FA;--soft:#C9BCE8;--card:#2B2147;}
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:grid;place-items:center;overflow-x:hidden}
+main{width:100%;max-width:460px;padding:24px;text-align:center}
+h1{font-family:Unbounded,"Arial Black",system-ui,sans-serif;font-weight:800;font-size:clamp(26px,8vw,40px);line-height:1.15;margin:0 0 20px;overflow-wrap:anywhere}
+p{font-size:18px;line-height:1.55;color:var(--soft);margin:0 0 14px}
+.btn{font-family:Unbounded,system-ui,sans-serif;font-weight:600;font-size:17px;background:var(--pink);color:#fff;border:0;border-radius:999px;padding:16px 32px;cursor:pointer;box-shadow:0 6px 0 #C2336A;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 #C2336A}
+.btn:focus-visible{outline:3px solid var(--yellow);outline-offset:4px}
+.gift{width:170px;height:170px;margin:0 auto 24px;display:block;animation:wiggle 2.4s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes wiggle{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-6deg)}84%{transform:rotate(6deg)}92%{transform:rotate(-3deg)}}
+.card{background:var(--card);border-radius:28px;padding:36px 26px;border:3px solid var(--ink);box-shadow:8px 8px 0 var(--yellow);animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.6) rotate(-4deg);opacity:0}to{transform:none;opacity:1}}
+.sign{font-family:Unbounded,system-ui,sans-serif;font-weight:600;color:var(--pink);margin-top:22px;font-size:18px}
+[hidden]{display:none!important}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
+@media (prefers-reduced-motion:reduce){.gift,.card{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-hidden="true"></canvas>
+<main>
+  <section id="closed">
+    <svg class="gift" viewBox="0 0 170 170" role="img" aria-label="Подарок">
+      <rect x="25" y="70" width="120" height="85" rx="8" fill="#18B8A8"/>
+      <rect x="15" y="50" width="140" height="30" rx="8" fill="#FF4D8D"/>
+      <rect x="77" y="50" width="16" height="105" fill="#FFC83D"/>
+      <path d="M85 50C60 15 30 30 50 46c10 8 27 4 35 4zM85 50c25-35 55-20 35-4-10 8-27 4-35 4z" fill="#FFC83D"/>
+    </svg>
+    <h1 id="closedTitle">Для тебя есть подарок</h1>
+    <button class="btn" id="open">Открыть</button>
+  </section>
+  <section id="opened" hidden>
+    <div class="card">
+      <h1 id="title">С днём рождения!</h1>
+      <p>Пусть этот год будет щедрым на радость, удачу и приятные сюрпризы.</p>
+      <p>Желаю, чтобы всё задуманное получалось легко, рядом были те, кого ты любишь, а впереди ждали новые яркие моменты.</p>
+      <div class="sign">Ты классный человек!</div>
+    </div>
+  </section>
+</main>
+<script>
+(function(){
+  var tg = window.Telegram && window.Telegram.WebApp;
+
+  // Имя: из start_param (base64url, ссылка t.me/бот/приложение?startapp=...)
+  // или из ?name=... (для проверки в обычном браузере)
+  function decodeName(s){
+    try{
+      s = s.replace(/-/g,'+').replace(/_/g,'/');
+      while (s.length % 4) s += '=';
+      var bin = atob(s);
+      var bytes = Uint8Array.from(bin, function(c){ return c.charCodeAt(0); });
+      return new TextDecoder().decode(bytes);
+    }catch(e){ return ''; }
+  }
+  var name = '';
+  var sp = tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param;
+  if (sp) name = decodeName(sp);
+  if (!name) name = new URLSearchParams(location.search).get('name') || '';
+  name = name.trim().slice(0, 40);
+  if (name){
+    document.getElementById('title').textContent = 'С днём рождения, ' + name + '!';
+    document.getElementById('closedTitle').textContent = name + ', для тебя есть подарок';
+  }
+
+  // Подстраиваем оболочку Телеграма под цвет страницы
+  if (tg){
+    try{
+      tg.ready(); tg.expand();
+      var m = getComputedStyle(document.body).backgroundColor.match(/\d+/g);
+      var hex = '#' + m.slice(0,3).map(function(n){ return ('0'+(+n).toString(16)).slice(-2); }).join('');
+      tg.setHeaderColor(hex); tg.setBackgroundColor(hex);
+    }catch(e){}
+  }
+
+  // Конфетти
+  var cv = document.getElementById('c'), ctx = cv.getContext('2d'), parts = [], run = false;
+  var cols = ['#FF4D8D','#FFC83D','#18B8A8','#7C5CFF','#FF8A3D'];
+  function size(){ cv.width = innerWidth*devicePixelRatio; cv.height = innerHeight*devicePixelRatio; }
+  size(); addEventListener('resize', size);
+  function burst(){
+    var d = devicePixelRatio;
+    for (var i=0;i<170;i++){
+      var a = Math.random()*Math.PI*2, s = (6+Math.random()*12)*d;
+      parts.push({x:cv.width/2,y:cv.height*0.55,vx:Math.cos(a)*s,vy:Math.sin(a)*s-8*d,
+        w:(6+Math.random()*7)*d,h:(4+Math.random()*5)*d,r:Math.random()*6,vr:(Math.random()-.5)*.4,
+        c:cols[i%cols.length],life:160+Math.random()*80});
+    }
+    if (!run){ run = true; requestAnimationFrame(tick); }
+  }
+  function tick(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    var d = devicePixelRatio;
+    parts = parts.filter(function(p){ return p.life>0 && p.y<cv.height+40; });
+    parts.forEach(function(p){
+      p.vy += .35*d; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.life--;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+    });
+    if (parts.length) requestAnimationFrame(tick); else run = false;
+  }
+
+  document.getElementById('open').addEventListener('click', function(){
+    document.getElementById('closed').hidden = true;
+    document.getElementById('opened').hidden = false;
+    try{ tg && tg.HapticFeedback.notificationOccurred('success'); }catch(e){}
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches){ burst(); setTimeout(burst, 500); }
+  });
+})();
+</script>
+</body>
+</html>
